@@ -80,6 +80,8 @@ def getgamereviews(ids, timeout, maxretries, pause, out):
         page = 1
         maxError = 10
         errorCount = 0
+        maxCursorSame = 2
+        cursorSame = 0
         while True:
             url = urltemplate.substitute({'id': id_, 'cursor': cursor})
             print(offset, url)
@@ -100,6 +102,13 @@ def getgamereviews(ids, timeout, maxretries, pause, out):
                     f.write(jsonpage)
                     page = page + 1
                     parsed_json = (json.loads(jsonpage))
+                    if urllib.parse.quote(parsed_json['cursor']) == cursor:
+                        print('Same cursor: ' + url)
+                        sleep(pause * 3)
+                        cursorSame += 1
+                        if cursorSame >= maxCursorSame:
+                            print('Max error!')
+                            break	#next website
                     cursor = urllib.parse.quote(parsed_json['cursor'])
 
         with open(donefilename, 'w', encoding='utf-8') as f:
