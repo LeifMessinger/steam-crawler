@@ -14,7 +14,9 @@ The script have an order of execution.
   This process can take a long time (it's a lot of data and the script sleeps between requests to be fair with the server).
   When the script is stopped and restarted it will skip games for which all reviews have been downloaded on the previous run (it does not downloads new reviews for such games).
   
-  * _steam-review-extractor.py_ extracts reviews and other info from the downloaded pages, saving them into ./data/reviews.csv 
+  * _steam-review-extractor.py_ DOESN'T WORK ANYMORE
+
+  * `./aggregate.sh` takes all the json files and merges them into one json file called `aggregated.json`
 
 Column in the reviews.csv file:
   * game id
@@ -28,7 +30,7 @@ Column in the reviews.csv file:
   * date of creation of the review
   * text of the review
   
-The last script _steam-reviews-stats.py_ is a sample script that processes the review.csv file and outputs some basic info and stats in json files:
+The last script _steam-reviews-stats.py_ DOESN'T WORK
 
   * _./data/games.json_ number of reviews and played hours for every game.
   

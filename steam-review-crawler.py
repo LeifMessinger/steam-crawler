@@ -31,15 +31,15 @@ from time import sleep
 
 def download_page(url, maxretries, timeout, pause):
     tries = 0
-    htmlpage = None
-    while tries < maxretries and htmlpage is None:
+    jsonpage = None
+    while tries < maxretries and jsonpage is None:
         try:
             with closing(urllib.request.urlopen(url, timeout=timeout)) as f:
-                htmlpage = f.read()
+                jsonpage = f.read()
                 sleep(pause)
         except (urllib.error.URLError, socket.timeout, socket.error):
             tries += 1
-    return htmlpage
+    return jsonpage
 
 
 def getgameids(filename):
@@ -56,7 +56,7 @@ def getgameids(filename):
 
 def getgamereviews(ids, timeout, maxretries, pause, out):
     urltemplate = string.Template(
-        'http://store.steampowered.com//appreviews/$id?cursor=$cursor&filter=recent&language=english')
+        'http://store.steampowered.com//appreviews/$id?json=1&cursor=$cursor&filter_offtopic_activity=0&purchase_type=all&num_per_page=100&filter=recent&language=english')
     endre = re.compile(r'({"success":2})|(no_more_reviews)')
 
     for (dir, id_, name) in ids:
@@ -83,9 +83,9 @@ def getgamereviews(ids, timeout, maxretries, pause, out):
         while True:
             url = urltemplate.substitute({'id': id_, 'cursor': cursor})
             print(offset, url)
-            htmlpage = download_page(url, maxretries, timeout, pause)
+            jsonpage = download_page(url, maxretries, timeout, pause)
 
-            if htmlpage is None:
+            if jsonpage is None:
                 print('Error downloading the URL: ' + url)
                 sleep(pause * 3)
                 errorCount += 1
@@ -93,13 +93,13 @@ def getgamereviews(ids, timeout, maxretries, pause, out):
                     print('Max error!')
                     break
             else:
-                with open(os.path.join(gamedir, 'reviews-%s.html' % page), 'w', encoding='utf-8') as f:
-                    htmlpage = htmlpage.decode()
-                    if endre.search(htmlpage):
+                with open(os.path.join(gamedir, 'reviews-%s.json' % page), 'w', encoding='utf-8') as f:
+                    jsonpage = jsonpage.decode()
+                    if endre.search(jsonpage):
                         break
-                    f.write(htmlpage)
+                    f.write(jsonpage)
                     page = page + 1
-                    parsed_json = (json.loads(htmlpage))
+                    parsed_json = (json.loads(jsonpage))
                     cursor = urllib.parse.quote(parsed_json['cursor'])
 
         with open(donefilename, 'w', encoding='utf-8') as f:
