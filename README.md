@@ -16,7 +16,7 @@ The script have an order of execution.
   
   * _steam-review-extractor.py_ DOESN'T WORK ANYMORE
 
-  * `./aggregate.sh` takes all the json files and merges them into one json file called `aggregated.json`
+  * `./aggregate.sh` takes all the json files and puts them in json files in `data/aggregated/`
 
 Column in the reviews.csv file:
   * game id
